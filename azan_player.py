@@ -8,7 +8,7 @@ import datetime
 def load_prayer_times():
     try:
         year = datetime.datetime.now().year
-        file_path = f"/home/pi/waktu_solat_{year}.json"
+        file_path = f"/home/pi/azan/waktu_solat_{year}.json"
         with open(file_path, "r") as file:
             data = json.load(file)
         return data
@@ -43,22 +43,22 @@ def play_audio(file_path):
     os.system(f"aplay {file_path}")
 
 def play_random_azan(subuh=False):
-    folder = "/home/pi/azan_audio/azan_subuh" if subuh else "/home/pi/azan_audio/azan_biasa"
+    folder = "/home/pi/azan/azan_audio/azan_subuh" if subuh else "/home/pi/azan/azan_audio/azan_biasa"
     files = [f for f in os.listdir(folder) if f.endswith('.wav')]
     if files:
         file_to_play = os.path.join(folder, random.choice(files))
         play_audio(file_to_play)
 
 def play_doa_selapas_azan():
-    doa_path = "/home/pi/azan_audio/doa_selapas_azan/doa.wav"
+    doa_path = "/home/pi/azan/azan_audio/doa_selapas_azan/doa.wav"
     play_audio(doa_path)
 
 def play_doa_dhuha():
-    doa_dhuha_path = "/home/pi/azan_audio/doa_dhuha/doa_dhuha.wav"
+    doa_dhuha_path = "/home/pi/azan/azan_audio/doa_dhuha/doa_dhuha.wav"
     play_audio(doa_dhuha_path)
 
 def play_audio_isyraq():
-    isyraq_path = "/home/pi/azan_audio/isyraq/isyraq.wav"
+    isyraq_path = "/home/pi/azan/azan_audio/isyraq/isyraq.wav"
     play_audio(isyraq_path)
 
 def calculate_extra_times(prayer_times):
