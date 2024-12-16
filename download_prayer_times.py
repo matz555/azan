@@ -6,7 +6,7 @@ def download_prayer_times():
     response = requests.get(url)
     if response.status_code == 200:
         year = datetime.datetime.now().year
-        filename = f"/home/pi/waktu_solat_{year}.json"
+        filename = f"/home/pi/azan/waktu_solat_{year}.json"
         with open(filename, "w") as file:
             file.write(response.text)
         print(f"Waktu solat untuk tahun {year} disimpan sebagai {filename}")
