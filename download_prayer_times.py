@@ -11,7 +11,7 @@ def load_zone_from_file(filepath):
         return None
 
 def download_prayer_times():
-    zone_file = "/home/pi/azan/zone.txt"  # Lokasi fail zon
+    zone_file = "/home/pi/backup_azan/zone.txt"  # Lokasi fail zon
     zone = load_zone_from_file(zone_file)
 
     if zone:
