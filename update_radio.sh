@@ -23,12 +23,9 @@ for file in "${CONFLICT_FILES[@]}"; do
     fi
 done
 
-# Tarik kemas kini Git dalam terminal baharu
+# Tarik kemas kini Git dalam sesi yang sama
 echo "Menarik kemas kini dari Git..."
-lxterminal -e "bash -c 'git pull origin main; exec bash'"
-
-# Menunggu proses git pull selesai
-sleep 5  # Memberi sedikit masa untuk terminal selesai
+git pull origin main
 
 # Jalankan skrip Python selepas git pull
 echo "Menjalankan skrip Python untuk memuat turun waktu solat..."
