@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Update Radio
+Exec=/home/pi/backup_azan/update_radio.sh
+Type=Application
+Terminal=false
+Icon=utilities-terminal
+

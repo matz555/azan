@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Play Radio
+Exec=/home/pi/backup_azan/open_terminal.sh
+Type=Application
+Terminal=false
+Icon=utilities-terminal
