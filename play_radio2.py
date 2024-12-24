@@ -12,7 +12,7 @@ stations = {
     "5": ("Kool 101", "https://stream.rcs.revma.com/3930238mtd3vv/8_3zp9p15w8eel02/playlist.m3u8"),
     "6": ("Kedah FM", "https://22253.live.streamtheworld.com/KEDAH_FMAAC.aac"),
     "7": ("Quran Radio", "https://qurango.net/radio/tarateel"),
-    "8": ("Makkah Live", "https://n08.radiojar.com/0tpy1h0kxtzuv?rj-ttl=5&rj-tok=AAABk_kzCAkArD78rdQiH0hHsw"),
+    "8": ("Makkah Live", "https://www.youtube.com/channel/UCqDUJp6Z4wyFkDJGqd0EP4Q/live"),
 }
 
 def set_volume(volume_level):
