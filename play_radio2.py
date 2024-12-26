@@ -10,10 +10,11 @@ stations = {
     "3": ("Hot FM", "https://stream.rcs.revma.com/drakdf8mtd3vv/3_17mp5oakmwcj602/playlist.m3u8"),
     "4": ("Zayan", "https://radio.garden/api/ara/content/listen/UMAAglgc/channel.mp3"),
     "5": ("Kool 101", "https://stream.rcs.revma.com/3930238mtd3vv/8_3zp9p15w8eel02/playlist.m3u8"),
-    "6": ("Kedah FM", "https://22253.live.streamtheworld.com/KEDAH_FMAAC.aac"),
-    "7": ("Radio An Nur", "https://radio.garden/api/ara/content/listen/EJUAY4QY/channel.mp3"),
-    "8": ("Quran Radio", "https://qurango.net/radio/tarateel"),
-    "9": ("Makkah Live", "https://www.youtube.com/channel/UCqDUJp6Z4wyFkDJGqd0EP4Q/live"),
+    "6": ("Gegar FM 88.1", "https://radio.garden/api/ara/content/listen/9QnGjJJG/channel.mp3"),
+    "7": ("Kedah FM", "https://22253.live.streamtheworld.com/KEDAH_FMAAC.aac"),
+    "8": ("Radio An Nur", "https://radio.garden/api/ara/content/listen/EJUAY4QY/channel.mp3"),
+    "9": ("Quran Radio", "https://qurango.net/radio/tarateel"),
+    "10": ("Makkah Live", "https://www.youtube.com/channel/UCqDUJp6Z4wyFkDJGqd0EP4Q/live"),
 }
 
 def set_volume(volume_level):
