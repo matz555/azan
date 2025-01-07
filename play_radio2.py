@@ -15,6 +15,7 @@ stations = {
     "8": ("Radio An Nur", "https://radio.garden/api/ara/content/listen/EJUAY4QY/channel.mp3"),
     "9": ("Quran Radio", "https://qurango.net/radio/tarateel"),
     "10": ("Makkah Live", "https://www.youtube.com/channel/UCqDUJp6Z4wyFkDJGqd0EP4Q/live"),
+    "11": ("Madinah Live", "https://www.youtube.com/channel/UCqDUJp6Z4wyFkDJGqd0EP4Q/live"),
 }
 
 def set_volume(volume_level):
