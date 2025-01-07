@@ -4,16 +4,48 @@ import json
 import os
 import random
 import datetime
+import requests
+
+def load_zone_from_file(filepath):
+    try:
+        with open(filepath, "r") as file:
+            zone = file.read().strip()
+            return zone
+    except FileNotFoundError:
+        print("Fail zon tidak ditemui. Sila pastikan fail wujud.")
+        return None
+
+def download_prayer_times():
+    zone_file = "/home/pi/backup_azan/zone.txt"  # Lokasi fail zon
+    zone = load_zone_from_file(zone_file)
+
+    if zone:
+        url = f"https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&period=year&zone={zone}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            year = datetime.datetime.now().year
+            filename = f"/home/pi/azan/waktu_solat_{year}.json"
+            with open(filename, "w") as file:
+                file.write(response.text)
+            print(f"Waktu solat untuk zon {zone} tahun {year} disimpan sebagai {filename}")
+        else:
+            print("Gagal memuat turun data waktu solat.")
+    else:
+        print("Zon waktu solat tidak sah. Program dihentikan.")
 
 def load_prayer_times():
     try:
         year = datetime.datetime.now().year
-        file_path = f"/home/pi/waktu_solat_{year}.json"
+        file_path = f"/home/pi/azan/waktu_solat_{year}.json"
+        if not os.path.exists(file_path):
+            print("Fail JSON waktu solat tidak dijumpai. Memuat turun fail...")
+            download_prayer_times()
+        
         with open(file_path, "r") as file:
             data = json.load(file)
         return data
     except FileNotFoundError:
-        print("Error: Prayer times JSON file not found.")
+        print("Error: Prayer times JSON file not found selepas percubaan memuat turun.")
         return None
     except json.JSONDecodeError:
         print("Error: JSON file is not formatted correctly.")
@@ -43,23 +75,27 @@ def play_audio(file_path):
     os.system(f"aplay {file_path}")
 
 def play_random_azan(subuh=False):
-    folder = "/home/pi/azan_audio/azan_subuh" if subuh else "/home/pi/azan_audio/azan_biasa"
+    folder = "/home/pi/azan/azan_audio/azan_subuh" if subuh else "/home/pi/azan/azan_audio/azan_biasa"
     files = [f for f in os.listdir(folder) if f.endswith('.wav')]
     if files:
         file_to_play = os.path.join(folder, random.choice(files))
         play_audio(file_to_play)
 
 def play_doa_selapas_azan():
-    doa_path = "/home/pi/azan_audio/doa_selapas_azan/doa.wav"
+    doa_path = "/home/pi/azan/azan_audio/doa_selapas_azan/doa.wav"
     play_audio(doa_path)
 
 def play_doa_dhuha():
-    doa_dhuha_path = "/home/pi/azan_audio/doa_dhuha/doa_dhuha.wav"
+    doa_dhuha_path = "/home/pi/azan/azan_audio/doa_dhuha/doa_dhuha.wav"
     play_audio(doa_dhuha_path)
 
 def play_audio_isyraq():
-    isyraq_path = "/home/pi/azan_audio/isyraq/isyraq.wav"
+    isyraq_path = "/home/pi/azan/azan_audio/isyraq/isyraq.wav"
     play_audio(isyraq_path)
+
+def play_surah_almulk():
+    almulk_path = "/home/pi/azan/azan_audio/surah_almulk.wav"
+    play_audio(almulk_path)
 
 def calculate_extra_times(prayer_times):
     """Calculate Dhuha and Isyraq times based on Syuruk and Fajr."""
@@ -81,7 +117,7 @@ def check_and_play_azan():
     prayer_times = get_today_prayer_times()
     if prayer_times:
         prayer_times = calculate_extra_times(prayer_times)
-        now = datetime.datetime.now().strftime("%H:%M")  # Only hours and minutes
+        now = "10:30"
         
         if now == prayer_times['fajr']:
             play_random_azan(subuh=True)
@@ -103,6 +139,11 @@ def check_and_play_azan():
         elif now == prayer_times['dhuha']:
             play_doa_dhuha()
 
+def check_and_play_surah_almulk():
+    now = datetime.datetime.now().strftime("%H:%M")
+    if now == "22:00":  # 10:00 PM
+        play_surah_almulk()
+
 if __name__ == "__main__":
     check_and_play_azan()
-
+    check_and_play_surah_almulk()
