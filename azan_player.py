@@ -93,6 +93,10 @@ def play_audio_isyraq():
     isyraq_path = "/home/pi/azan/azan_audio/isyraq/isyraq.wav"
     play_audio(isyraq_path)
 
+def play_surah_almulk():
+    almulk_path = "/home/pi/azan/azan_audio/surah_almulk.wav"
+    play_audio(almulk_path)
+
 def calculate_extra_times(prayer_times):
     """Calculate Dhuha and Isyraq times based on Syuruk and Fajr."""
     fajr_time = datetime.datetime.strptime(prayer_times['fajr'], "%H:%M")
@@ -135,5 +139,11 @@ def check_and_play_azan():
         elif now == prayer_times['dhuha']:
             play_doa_dhuha()
 
+def check_and_play_surah_almulk():
+    now = datetime.datetime.now().strftime("%H:%M")
+    if now == "22:00":  # 10:00 PM
+        play_surah_almulk()
+
 if __name__ == "__main__":
     check_and_play_azan()
+    check_and_play_surah_almulk()
