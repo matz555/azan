@@ -18,7 +18,7 @@ stations = {
 }
 
 def set_volume(volume_level):
-    """Tetapkan volume menggunakan amixer."""
+    """Tetapkan volume menggunakan amixer edit."""
     try:
         subprocess.run(["amixer", "sset", "Master", f"{volume_level}%"], check=True)
         print(f"Volume ditetapkan kepada {volume_level}%.")
