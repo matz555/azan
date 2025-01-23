@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import json
 import os
 import random
@@ -116,16 +114,6 @@ def calculate_extra_times(prayer_times):
     prayer_times['dhuha'] = dhuha_time.strftime("%H:%M")
     return prayer_times
 
-def reset_zikir_log():
-    now = datetime.datetime.now()
-    zikir_log_path = "/home/pi/azan/zikir_log.txt"
-
-    # Check if it's midnight
-    if now.strftime("%H:%M") == "00:00":
-        if os.path.exists(zikir_log_path):
-            os.remove(zikir_log_path)
-            print("Zikir log telah direset.")
-
 def check_and_play_azan():
     prayer_times = get_today_prayer_times()
     if prayer_times:
@@ -175,18 +163,31 @@ def check_and_play_zikir():
 
         # Check if the current hour is already logged
         if current_hour not in zikir_log:
-            # Skip zikir if it matches any prayer time
-            if prayer_times:
-                if now.strftime("%H:%M") not in prayer_times.values():
-                    zikir_folder = "/home/pi/azan/azan_audio/zikir"
-                    play_random_audio(zikir_folder)
+            # Play zikir only between 6:00 AM and 10:00 PM
+            if 6 <= int(current_hour) <= 22:
+                # Skip zikir if it matches any prayer time
+                if prayer_times:
+                    if now.strftime("%H:%M") not in prayer_times.values():
+                        zikir_folder = "/home/pi/azan/azan_audio/zikir"
+                        play_random_audio(zikir_folder)
 
-            # Log the hour
-            with open(zikir_log_path, "a") as file:
-                file.write(current_hour + "\n")
+                # Log the hour
+                with open(zikir_log_path, "a") as file:
+                    file.write(current_hour + "\n")
+
+def clear_zikir_log_daily():
+    """Clear the zikir log at midnight."""
+    now = datetime.datetime.now().strftime("%H:%M")
+    zikir_log_path = "/home/pi/azan/zikir_log.txt"
+
+    if now == "00:00":
+        if os.path.exists(zikir_log_path):
+            with open(zikir_log_path, "w") as file:
+                file.write("")
+            print("Log zikir dikosongkan untuk hari baru.")
 
 if __name__ == "__main__":
-    reset_zikir_log()
     check_and_play_azan()
     check_and_play_surah_almulk()
     check_and_play_zikir()
+    clear_zikir_log_daily()
