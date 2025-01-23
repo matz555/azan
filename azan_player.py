@@ -56,10 +56,13 @@ def get_today_prayer_times():
     if data is None:
         return None
 
+    # Format today's date to match JSON format, e.g., 01-Nov-2024
     today = datetime.datetime.now().strftime("%d-%b-%Y")
     
+    # Loop through each entry in prayerTime and match the date
     for entry in data.get('prayerTime', []):
         if entry.get('date') == today:
+            # Remove seconds from each prayer time
             for key in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'syuruk']:
                 if key in entry:
                     entry[key] = entry[key][:5]  # Keep only "HH:MM"
@@ -77,11 +80,35 @@ def play_random_audio(folder):
         file_to_play = os.path.join(folder, random.choice(files))
         play_audio(file_to_play)
 
+def play_random_azan(subuh=False):
+    folder = "/home/pi/azan/azan_audio/azan_subuh" if subuh else "/home/pi/azan/azan_audio/azan_biasa"
+    play_random_audio(folder)
+
+def play_doa_selapas_azan():
+    doa_path = "/home/pi/azan/azan_audio/doa_selapas_azan/doa.wav"
+    play_audio(doa_path)
+
+def play_doa_dhuha():
+    doa_dhuha_path = "/home/pi/azan/azan_audio/doa_dhuha/doa_dhuha.wav"
+    play_audio(doa_dhuha_path)
+
+def play_audio_isyraq():
+    isyraq_path = "/home/pi/azan/azan_audio/isyraq/isyraq.wav"
+    play_audio(isyraq_path)
+
+def play_surah_almulk():
+    almulk_path = "/home/pi/azan/azan_audio/surah_almulk.wav"
+    play_audio(almulk_path)
+
 def calculate_extra_times(prayer_times):
+    """Calculate Dhuha and Isyraq times based on Syuruk and Fajr."""
     fajr_time = datetime.datetime.strptime(prayer_times['fajr'], "%H:%M")
     syuruk_time = datetime.datetime.strptime(prayer_times['syuruk'], "%H:%M")
     
+    # Calculate Isyraq (15 minutes after Syuruk)
     isyraq_time = syuruk_time + datetime.timedelta(minutes=15)
+    
+    # Calculate Dhuha (Syuruk + 1/3 of (Syuruk - Fajr))
     difference = syuruk_time - fajr_time
     dhuha_time = syuruk_time + datetime.timedelta(seconds=(difference.total_seconds() / 3))
     
@@ -89,38 +116,77 @@ def calculate_extra_times(prayer_times):
     prayer_times['dhuha'] = dhuha_time.strftime("%H:%M")
     return prayer_times
 
+def reset_zikir_log():
+    now = datetime.datetime.now()
+    zikir_log_path = "/home/pi/azan/zikir_log.txt"
+
+    # Check if it's midnight
+    if now.strftime("%H:%M") == "00:00":
+        if os.path.exists(zikir_log_path):
+            os.remove(zikir_log_path)
+            print("Zikir log telah direset.")
+
 def check_and_play_azan():
     prayer_times = get_today_prayer_times()
     if prayer_times:
         prayer_times = calculate_extra_times(prayer_times)
-        now = datetime.datetime.now().strftime("%H:%M")
+        now = datetime.datetime.now().strftime("%H:%M")  # Only hours and minutes
         
         if now == prayer_times['fajr']:
-            play_random_audio("/home/pi/azan/azan_audio/azan_subuh")
-            play_audio("/home/pi/azan/azan_audio/doa_selapas_azan/doa.wav")
-        elif now in [prayer_times['dhuhr'], prayer_times['asr'], prayer_times['maghrib'], prayer_times['isha']]:
-            play_random_audio("/home/pi/azan/azan_audio/azan_biasa")
-            play_audio("/home/pi/azan/azan_audio/doa_selapas_azan/doa.wav")
+            play_random_azan(subuh=True)
+            play_doa_selapas_azan()
+        elif now == prayer_times['dhuhr']:
+            play_random_azan()
+            play_doa_selapas_azan()
+        elif now == prayer_times['asr']:
+            play_random_azan()
+            play_doa_selapas_azan()
+        elif now == prayer_times['maghrib']:
+            play_random_azan()
+            play_doa_selapas_azan()
+        elif now == prayer_times['isha']:
+            play_random_azan()
+            play_doa_selapas_azan()
+        elif now == prayer_times['isyraq']:
+            play_audio_isyraq()
+        elif now == prayer_times['dhuha']:
+            play_doa_dhuha()
 
 def check_and_play_surah_almulk():
     now = datetime.datetime.now().strftime("%H:%M")
-    if now == "22:10":
-        play_audio("/home/pi/azan/azan_audio/surah_almulk.wav")
+    if now == "22:10":  # 10:10 PM
+        play_surah_almulk()
 
 def check_and_play_zikir():
     now = datetime.datetime.now()
-    current_time = now.strftime("%H:%M")
-    current_hour = now.strftime("%H:00")
+    current_hour = now.strftime("%H")
+    current_minute = now.strftime("%M")
 
-    if "06:00" <= current_hour <= "22:00":
+    if current_minute == "00":  # Check if it's the start of the hour
+        zikir_log_path = "/home/pi/azan/zikir_log.txt"
         prayer_times = get_today_prayer_times()
-        if prayer_times:
-            prayer_times = calculate_extra_times(prayer_times)
 
-            if current_time not in prayer_times.values():
-                play_random_audio("/home/pi/azan/azan_audio/zikir")
+        # Load or create a log to ensure zikir plays only once per hour
+        if os.path.exists(zikir_log_path):
+            with open(zikir_log_path, "r") as file:
+                zikir_log = file.read().splitlines()
+        else:
+            zikir_log = []
+
+        # Check if the current hour is already logged
+        if current_hour not in zikir_log:
+            # Skip zikir if it matches any prayer time
+            if prayer_times:
+                if now.strftime("%H:%M") not in prayer_times.values():
+                    zikir_folder = "/home/pi/azan/azan_audio/zikir"
+                    play_random_audio(zikir_folder)
+
+            # Log the hour
+            with open(zikir_log_path, "a") as file:
+                file.write(current_hour + "\n")
 
 if __name__ == "__main__":
+    reset_zikir_log()
     check_and_play_azan()
-    check_and_play_zikir()
     check_and_play_surah_almulk()
+    check_and_play_zikir()
