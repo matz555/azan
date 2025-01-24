@@ -147,12 +147,12 @@ def check_and_play_surah_almulk():
 
 def is_near_prayer_time(current_time, prayer_times):
     """Check if current time is within 5 minutes of any prayer time."""
-    for time in prayer_times.values():
-        prayer_time = datetime.datetime.strptime(time, "%H:%M")
-        start_range = (prayer_time - datetime.timedelta(minutes=5)).time()
-        end_range = (prayer_time + datetime.timedelta(minutes=5)).time()
-        if start_range <= current_time.time() <= end_range:
-            return True
+    current_minute = int(current_time.strftime("%M"))
+    if current_minute >= 55 or current_minute <= 5:
+        for time in prayer_times.values():
+            prayer_time = datetime.datetime.strptime(time, "%H:%M")
+            if prayer_time.time().hour == current_time.time().hour:
+                return True
     return False
 
 def check_and_play_zikir():
