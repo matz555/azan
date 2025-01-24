@@ -145,6 +145,16 @@ def check_and_play_surah_almulk():
     if now == "22:10":  # 10:10 PM
         play_surah_almulk()
 
+def is_near_prayer_time(current_time, prayer_times):
+    """Check if current time is within 5 minutes of any prayer time."""
+    for time in prayer_times.values():
+        prayer_time = datetime.datetime.strptime(time, "%H:%M")
+        start_range = (prayer_time - datetime.timedelta(minutes=5)).time()
+        end_range = (prayer_time + datetime.timedelta(minutes=5)).time()
+        if start_range <= current_time.time() <= end_range:
+            return True
+    return False
+
 def check_and_play_zikir():
     now = datetime.datetime.now()
     current_hour = now.strftime("%H")
@@ -165,29 +175,20 @@ def check_and_play_zikir():
         if current_hour not in zikir_log:
             # Play zikir only between 6:00 AM and 10:00 PM
             if 6 <= int(current_hour) <= 22:
-                # Skip zikir if it matches any prayer time
-                if prayer_times:
-                    if now.strftime("%H:%M") not in prayer_times.values():
-                        zikir_folder = "/home/pi/azan/azan_audio/zikir"
-                        play_random_audio(zikir_folder)
+                # Skip zikir if it matches any prayer time or is near it
+                if prayer_times and not is_near_prayer_time(now, prayer_times):
+                    zikir_folder = "/home/pi/azan/azan_audio/zikir"
+                    play_random_audio(zikir_folder)
 
                 # Log the hour
                 with open(zikir_log_path, "a") as file:
                     file.write(current_hour + "\n")
 
-def clear_zikir_log_daily():
-    """Clear the zikir log at midnight."""
-    now = datetime.datetime.now().strftime("%H:%M")
-    zikir_log_path = "/home/pi/azan/zikir_log.txt"
-
-    if now == "00:00":
-        if os.path.exists(zikir_log_path):
-            with open(zikir_log_path, "w") as file:
-                file.write("")
-            print("Log zikir dikosongkan untuk hari baru.")
+        # Clear the log at midnight
+        if now.strftime("%H:%M") == "00:00":
+            open(zikir_log_path, "w").close()
 
 if __name__ == "__main__":
     check_and_play_azan()
     check_and_play_surah_almulk()
     check_and_play_zikir()
-    clear_zikir_log_daily()
