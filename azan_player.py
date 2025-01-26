@@ -145,20 +145,6 @@ def check_and_play_surah_almulk():
     if now == "22:10":  # 10:10 PM
         play_surah_almulk()
 
-def is_within_buffer(current_time, prayer_time):
-    """Check if current time is within 5 minutes before or after a prayer time."""
-    prayer_dt = datetime.datetime.strptime(prayer_time, "%H:%M")
-    start_buffer = (prayer_dt - datetime.timedelta(minutes=5)).time()
-    end_buffer = (prayer_dt + datetime.timedelta(minutes=5)).time()
-    return start_buffer <= current_time.time() or current_time.time() <= end_buffer
-
-def is_near_any_prayer_time(current_time, prayer_times):
-    """Check if the current time is near any prayer time."""
-    for time in prayer_times.values():
-        if is_within_buffer(current_time, time):
-            return True
-    return False
-
 def check_and_play_zikir():
     now = datetime.datetime.now()
     current_hour = now.strftime("%H")
@@ -166,8 +152,8 @@ def check_and_play_zikir():
 
     if current_minute == "00":  # Check if it's the start of the hour
         zikir_log_path = "/home/pi/azan/zikir_log.txt"
-        prayer_times = get_today_prayer_times()
-
+        #prayer_times = get_today_prayer_times()
+        
         # Load or create a log to ensure zikir plays only once per hour
         if os.path.exists(zikir_log_path):
             with open(zikir_log_path, "r") as file:
@@ -179,10 +165,8 @@ def check_and_play_zikir():
         if current_hour not in zikir_log:
             # Play zikir only between 6:00 AM and 10:00 PM
             if 6 <= int(current_hour) <= 22:
-                # Skip zikir if near any prayer time
-                if prayer_times and not is_near_any_prayer_time(now, prayer_times):
-                    zikir_folder = "/home/pi/azan/azan_audio/zikir"
-                    play_random_audio(zikir_folder)
+                zikir_folder = "/home/pi/azan/azan_audio/zikir"
+                play_random_audio(zikir_folder)
 
                 # Log the hour
                 with open(zikir_log_path, "a") as file:
