@@ -60,7 +60,7 @@ def log_special_prayer_times(prayer_times):
                 if key == "date":
                     continue  # Skip logging the date
                 hour, minute = map(int, time_str.split(":"))
-                if minute > 55:
+                if minute > 50:
                     log_file.write(f"{hour + 1:02d}\n")
                 elif minute < 5:
                     log_file.write(f"{hour:02d}\n")
