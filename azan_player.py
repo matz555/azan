@@ -145,6 +145,24 @@ def check_and_play_surah_almulk():
     if now == "22:10":  # 10:10 PM
         play_surah_almulk()
 
+def set_volume(volume_percentage):
+    """Set system volume to the specified percentage."""
+    os.system(f"amixer set Master {volume_percentage}%")
+
+def play_audio(file_path, volume_percentage=100):
+    """Play audio with specified volume, then reset to 100%."""
+    original_volume = 100  # Assume default volume is 100%
+    set_volume(volume_percentage)  # Set desired volume
+    os.system(f"aplay {file_path}")  # Play audio
+    set_volume(original_volume)  # Reset volume
+
+def play_random_audio(folder, volume_percentage=100):
+    """Play a random audio file from a folder with specified volume."""
+    files = [f for f in os.listdir(folder) if f.endswith('.wav')]
+    if files:
+        file_to_play = os.path.join(folder, random.choice(files))
+        play_audio(file_to_play, volume_percentage)
+
 def check_and_play_zikir():
     now = datetime.datetime.now()
     current_hour = now.strftime("%H")
@@ -166,7 +184,7 @@ def check_and_play_zikir():
             # Play zikir only between 6:00 AM and 10:00 PM
             if 6 <= int(current_hour) <= 22:
                 zikir_folder = "/home/pi/azan/azan_audio/zikir"
-                play_random_audio(zikir_folder)
+                play_random_audio(zikir_folder, volume_percentage=70)  # Play zikir at 70% volume
 
                 # Log the hour
                 with open(zikir_log_path, "a") as file:
