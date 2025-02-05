@@ -141,7 +141,7 @@ def check_and_play_azan():
 
 def check_and_play_surah_almulk():
     now = datetime.datetime.now().strftime("%H:%M")
-    if now == "22:10":  # 10:10 PM
+    if now == "21:30":  # 9:30 PM
         play_surah_almulk()
 
 def check_and_play_zikir():
