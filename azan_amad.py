@@ -122,6 +122,10 @@ def check_and_play_azan():
         elif now == prayer_times['isha']:
             play_random_azan()
             play_doa_selapas_azan()
+        elif now == prayer_times['dhuha']:
+            play_audio("/home/pi/azan/azan_audio/doa_dhuha.wav")
+        elif now == prayer_times['isyraq']:
+            play_audio("/home/pi/azan/azan_audio/isyraq.wav")
 
 def play_scheduled_zikir():
     zikir_folder = "/home/pi/azan/azan_audio/zikir"
@@ -148,4 +152,3 @@ def play_scheduled_zikir():
 if __name__ == "__main__":
     check_and_play_azan()
     play_scheduled_zikir()
-
