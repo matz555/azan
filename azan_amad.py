@@ -123,9 +123,9 @@ def check_and_play_azan():
             play_random_azan()
             play_doa_selapas_azan()
         elif now == prayer_times['dhuha']:
-            play_audio("/home/pi/azan/azan_audio/doa_dhuha.wav")
+            play_audio("/home/pi/azan/azan_audio/doa_dhuha/doa_dhuha.wav")
         elif now == prayer_times['isyraq']:
-            play_audio("/home/pi/azan/azan_audio/isyraq.wav")
+            play_audio("/home/pi/azan/azan_audio/isyraq/isyraq.wav")
 
 def play_scheduled_zikir():
     zikir_folder = "/home/pi/azan/azan_audio/zikir"
