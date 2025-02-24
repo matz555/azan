@@ -135,19 +135,53 @@ def play_scheduled_zikir():
         "15:00": "9.wav", "16:00": "10.wav", "17:00": "11.wav", "18:00": "12.wav",
         "20:00": "14.wav", "21:00": "15.wav", "22:00": "16.wav", "23:00": "17.wav"
     }
+    zikir_log_path = "/home/pi/azan/zikir_log.txt"
 
-    now = datetime.datetime.now().strftime("%H:%M")
-    if now in zikir_schedule:
-        play_audio(os.path.join(zikir_folder, zikir_schedule[now]))
+    # Dapatkan waktu sekarang
+    now = datetime.datetime.now()
+    current_hour = now.strftime("%H")
+    current_time = now.strftime("%H:%M")
+
+    # Semak jika zikir telah dimainkan pada jam ini
+    if os.path.exists(zikir_log_path):
+        with open(zikir_log_path, "r") as file:
+            zikir_log = file.read().splitlines()
     else:
-        prayer_times = get_today_prayer_times()
-        if prayer_times:
-            fifteen_before_maghrib = (datetime.datetime.strptime(prayer_times['maghrib'], "%H:%M") - datetime.timedelta(minutes=15)).strftime("%H:%M")
-            fifteen_before_fajr = (datetime.datetime.strptime(prayer_times['fajr'], "%H:%M") - datetime.timedelta(minutes=15)).strftime("%H:%M")
-            if now == fifteen_before_maghrib:
-                play_audio(os.path.join(zikir_folder, "13.wav"))
-            elif now == fifteen_before_fajr:
-                play_audio(os.path.join(zikir_folder, "18.wav"))
+        zikir_log = []
+
+    # Mainkan zikir jika current_hour belum ada dalam log
+    if current_hour not in zikir_log:
+        if current_time in zikir_schedule:
+            play_audio(os.path.join(zikir_folder, zikir_schedule[current_time]), volume_percentage=70)
+            
+            # Log current_hour selepas memainkan zikir
+            with open(zikir_log_path, "a") as file:
+                file.write(current_hour + "\n")
+        
+        else:
+            # Mainkan zikir khas sebelum Maghrib dan Subuh
+            prayer_times = get_today_prayer_times()
+            if prayer_times:
+                fifteen_before_maghrib = (datetime.datetime.strptime(prayer_times['maghrib'], "%H:%M") - datetime.timedelta(minutes=15)).strftime("%H:%M")
+                fifteen_before_fajr = (datetime.datetime.strptime(prayer_times['fajr'], "%H:%M") - datetime.timedelta(minutes=15)).strftime("%H:%M")
+                
+                if current_time == fifteen_before_maghrib:
+                    play_audio(os.path.join(zikir_folder, "13.wav"), volume_percentage=70)
+                    
+                    # Log current_hour
+                    with open(zikir_log_path, "a") as file:
+                        file.write(current_hour + "\n")
+                        
+                elif current_time == fifteen_before_fajr:
+                    play_audio(os.path.join(zikir_folder, "18.wav"), volume_percentage=70)
+                    
+                    # Log current_hour
+                    with open(zikir_log_path, "a") as file:
+                        file.write(current_hour + "\n")
+
+    # Reset log pada pukul 12 tengah malam
+    if current_time == "00:00":
+        open(zikir_log_path, "w").close()
 
 if __name__ == "__main__":
     check_and_play_azan()
