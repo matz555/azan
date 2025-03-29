@@ -122,6 +122,8 @@ def check_and_play_azan():
         elif now == prayer_times['isha']:
             play_random_azan()
             play_doa_selapas_azan()
+        elif now == prayer_times['syuruk']
+            play_audio("/home/pi/azan/azan_audio/syuruk/syuruk.wav")
         elif now == prayer_times['dhuha']:
             play_audio("/home/pi/azan/azan_audio/doa_dhuha/doa_dhuha.wav")
         elif now == prayer_times['isyraq']:
